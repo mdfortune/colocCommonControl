@@ -16,7 +16,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
     for (ii in 1:n.clean){
         tagsize[ii]<-length(which(tagkey==tags[ii]))
     }
-    
+	orig.tags<-tags
  	#make binomial model
     f1 <- as.formula(paste("Y ~ 1 | ", paste(tags,collapse="+")))
     x1 <- df1[,tags]
@@ -142,23 +142,21 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		#which tag is conditional SNP cc in, and what is its index
 		ccsnp<-cond[cc]
 		cctag<-tagkey[which(names(tagkey)==ccsnp)]
-		ccindex<-which(tags==cctag)
-		if (length(ccindex)>0){
+		size.ccindex<-which(orig.tags==cctag)
+        tag.ccindex<-which(tags==cctag)
+		if (length(tag.ccindex)>0){
+            #then we are still analysing the tag with the conditional SNP in
 			if (cctag==ccsnp){
-				if (tagsize[ccindex]==1){
+				if (tagsize[size.ccindex]==1){
 					#remove this tag
-					tags<-tags[-ccindex]
-					tagsize<-tagsize[-ccindex]
-					tagkey<-tagkey[-ccindex]
+					tags<-tags[-tag.ccindex]
 				}else{
 					#index this tag by a different snp
-					tagsize[ccindex]=tagsize[ccindex]-1
-					tags[ccindex]<-setdiff(names(tagkey[which(tagkey==cctag)]),cctag)[1]
+					tags[tag.ccindex]<-setdiff(names(tagkey[which(tagkey==cctag)]),cctag)[1]
+                    orig.tags[size.ccindex]<-tags[tag.ccindex]
 				}
-			}else{
-				#the tag now has size less by 1
-				tagsize[ccindex]=tagsize[ccindex]-1
 			}
+			tagsize[size.ccindex]=tagsize[size.ccindex]-1
 		}
 		
 	}
@@ -201,7 +199,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		n.clean <- length(tags)
 	}
 	n.clean <- length(tags)
-	tagsize<-tagsize[which(unique(tagkey) %in% tags)]
+	tagsize<-tagsize[which(orig.tags %in% tags)]
 	#which models are we testing?
 	#the matrix of tag models only
     tagmodels<-makebinmod(n.clean,1)
