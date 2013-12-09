@@ -8,7 +8,7 @@
 #'gives a posterior predictive p value.  The Bayesian approach can also be used
 #'to give a credible interval for \code{eta}.
 #'
-#'@inheritParams coloc.test.summary
+#'@inheritParams coloc.var.test.summary
 #'@export
 #'@param df1 A dataframe, containing response and potential explanatory variables for the dataset.
 #'@param snps The SNPs to consider as potential explanatory variables
@@ -18,7 +18,10 @@
 #'@param n.approx number of values at which to numerically approximate the posterior
 #'@param r2.trim for pairs SNPs with r2 greater than \code{r2.trim}, only one SNP will be retained.  This avoids numerical instability problems caused by including two highly correlated SNPs in the model.
 #'@param quiet suppress messages about how the model spaced is trimmed for BMA
-#'@param ... other parameters passed to \code{coloc.test}
+#'@param bayes Logical, indicating whether to perform Bayesian inference for the coefficient of proportionality, eta.  If \code{bayes.factor} is supplied, Bayes factors are additionally computed for the specificed values.  This can add a little time as it requires numerical integration, so can be set to FALSE to save time in simulations, for example.
+#'@param bayes.factor Either a numeric vector, giving single value(s) of \code{eta} or a list of numeric vectors, each of length two and specifying ranges of eta which should be compared to each other.  Thus, the vector or list needs to have length at least two.
+#'@param plot.coeff \code{TRUE} if you want to generate a plot showing the coefficients from the two regressions together with confidence regions. 
+#'@param ... other parameters passed to \code{coloc.var.test.summary}
 #'@return a \code{coloc} or \code{colocBayes} object
 #'@author Mary Fortune
 coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
@@ -145,7 +148,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
     probs <- multi.var.bf(modelsbin,  x=binX, y=binY, family="binomial",quiet=quiet)
     probs <- probs/sum(probs)
     
-    ## run coloc.test on each model
+    ## run coloc.var.test.summary on each model
     models.l <- matrix(as.logical(models),nrow(models))
     post <- matrix(NA,length(probs),n.approx)
     if(length(bayes.factor)) {
@@ -399,7 +402,7 @@ coloc.var.test <- function(X,vars.drop=NULL, ...) {
 ##' @title Colocalisation testing for shared controls using regression coefficients
 ##' @return an object of class coloc, colocBayes or colocBMA
 ##' @author Chris Wallace
-##' @inheritParams coloc.test
+##' @inheritParams coloc.var.bma
 ##' @export
 ##' @param b1 regression coefficients for trait 1
 ##' @param b2 regression coefficients for trait 2
@@ -428,6 +431,7 @@ coloc.var.test <- function(X,vars.drop=NULL, ...) {
 ##' @param level.ci,n.approx \code{level.ci} denotes the required level of the
 ##' credible interval for \code{eta}.  This is calculated numerically by
 ##' approximating the posterior distribution at \code{n.approx} distinct values.
+##' @param nsnps The SNPs to consider as potential explanatory variables
 ##' @author Mary Fortune
 coloc.var.test.summary <- function(b1,b2,V,k=1,plot.coeff=TRUE,plots.extra=NULL,bayes=!is.null(bayes.factor),
                                n.approx=1001, level.ci=0.95,
