@@ -1,0 +1,28 @@
+Package: colocCommonControl
+Type: Package
+Depends:
+    methods,
+    MASS,
+    BMA,
+    coloc
+Suggests:
+    ggplot2,
+    snpStats
+Title: Colocalisation tests of two genetic traits with the case of a common
+    control
+Version: 2.1
+Date: 2013-05-22
+Authors@R: c(person("Mary", "Fortune", role=c("aut","cre"), email =
+    "mary.fortune@cimr.cam.ac.uk"))
+Author: Mary Fortune
+Maintainer: Mary Fortune <mary.fortune@cimr.cam.ac.uk>
+Description: Performs the colocalisation tests described in Plagnol et
+    al (2009), Wallace et al (2013) and Giambartolomei et al
+    (2013), in the case of a common control.
+License: GPL
+LazyLoad: yes
+Collate:
+    'coloc.bayes.mdf.R'
+    'coloc.bayes.3t.mdf.R'
+    'coloc.bayes.tag.cond.R'
+    'coloc.mdf.R'
