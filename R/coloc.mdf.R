@@ -130,6 +130,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         idx <- apply(sapply(1:nrow(cmb), function(i) { cmb[i,] %in% which(use) }),1,any)
         t(cmb[,idx])
     })
+	
     models <- lapply(combs, function(X) {
         tmp <- matrix(0,nrow(X),n.clean)
         for(j in 1:ncol(X)) {
@@ -138,6 +139,8 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         tmp
     })
     npairs<-length(unlist(combs))/2
+	if (npairs > 400)
+		return(1)
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
     } else {
