@@ -1,3 +1,20 @@
+#'Colocation for two traits with a common control, conditioning on SNPs
+#'Merges SNPs with high r2 into tags prior to analysis
+#'Generates bayes factors for each plausible one tag model
+#'
+#'
+#'@title bayesian colocalisation; two traits; with tagging; conditional
+#'@export
+#'@param df1 A dataframe, containing response and potential explanatory variables for the dataset.
+#'@param snps The SNPs to consider as potential explanatory variables
+#'@param response The name of the response variable in \code{df1}
+#'@param priors A list of priors over the hypotheses 
+#'@param pp.thr posterior probability threshold used to trim SNP list.  Only SNPs with a marginal posterior probability of inclusion greater than this with one or other trait will be included in the full BMA analysis
+#'@param r2.trim If a pairs of SNPs has r2 greater than \code{r2.trim}, they are put in the same tag
+#'@param quiet suppress messages about how the model spaced is trimmed for BMA
+#'@param cond A list of the SNPs we are to condition upon
+#'@return a list of posterior probabilities that each tag is causitive to both traits, the tag names, and the corresponding SNPs
+#'@author Mary Fortune
 coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),response="Y",priors=list(c(1,1,1,1,1)),r2.trim=0.99,pp.thr=0.005,quiet=TRUE,cond=NULL) {
     #we consider all models which contain at most 1 snps for each trait, using tagging
 	#we condition on the SNPs present in cond
@@ -162,7 +179,12 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	}
 	n.clean<-length(tags)
 	cat("We consider ",n.clean, " tags in the final analysis, and condition upon ",length(cond), " SNPs \n")
-
+	if (n.clean ==0){
+		print("for prior:  0.99979 1e-04 1e-04 1.00021e-08 1e-05")
+		print(" we have posterior:  0 0 0 0 0") 
+		print("---")
+		return (1)	
+	}
     
 
     #covert to a binomial model so we can run glib
