@@ -12,10 +12,12 @@
 #'@param pp.thr posterior probability threshold used to trim SNP list.  Only SNPs with a marginal posterior probability of inclusion greater than this with one or other trait will be included in the full BMA analysis
 #'@param r2.trim If a pairs of SNPs has r2 greater than \code{r2.trim}, they are put in the same tag
 #'@param quiet suppress messages about how the model spaced is trimmed for BMA
-#'@param cond A list of the SNPs we are to condition upon
+#'@param cond1 A list of the SNPs we are to condition upon for trait1
+#'@param cond2 A list of the SNPs we are to condition upon for trait2
 #'@return a list of posterior probabilities that each tag is causitive to both traits, the tag names, and the corresponding SNPs
 #'@author Mary Fortune
-coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),response="Y",priors=list(c(1,1,1,1,1)),r2.trim=0.99,pp.thr=0.005,quiet=TRUE,cond=NULL) {
+coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),response="Y",priors=list(c(1,1,1,1,1)),r2.trim=0.99,pp.thr=0.005,quiet=TRUE,cond1=NULL,cond2=NULL) {
+    cond<-union(cond1,cond2)
     #we consider all models which contain at most 1 snps for each trait, using tagging
 	#we condition on the SNPs present in cond
 	if (length(cond)==0){
@@ -152,7 +154,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	whichtags2<-tags[which(pp.trait2>pp.thr)]
 	whichtags<-union(whichtags1,whichtags2)
 	tags<-intersect(whichtags,tags)
-    n.clean <- length(tags)
+        n.clean <- length(tags)
 
 	#seperate the tags and the conditioning SNPs
 	for (cc in 1:length(cond)){
@@ -227,9 +229,13 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
     tagmodels<-makebinmod(n.clean,1)
     category<-apply(tagmodels,1,whichcat)
 	#add the conditionals to this
-	models<-matrix(1,nrow(tagmodels),2*n.clean+2*length(cond)+1)
-	models[,1:n.clean]<-tagmodels[,1:n.clean]
-	models[,(n.clean+length(cond)+1):(2*n.clean+length(cond))]<-tagmodels[,(n.clean+1):(2*n.clean)]
+	cond1row<-rep(0,length(cond))
+	cond1row[which(cond %in% cond1)]=1
+	cond1models<-t(matrix(rep(cond1row,times=nrow(tagmodels)),nrow=length(cond)))
+	cond2row<-rep(0,length(cond))
+	cond2row[which(cond %in% cond2)]=1
+	cond2models<-t(matrix(rep(cond2row,times=nrow(tagmodels)),nrow=length(cond)))
+	models<-cbind(tagmodels[,1:n.clean],cond1models,tagmodels[,(n.clean+1):(2*n.clean)],cond2models,rep(1,times=nrow(tagmodels)))
     #run glib
     mods1 <- glib(x=binX, y=binY, error="binomial", link="logit",models=models)
     #-2 log the bf with a flat prior
