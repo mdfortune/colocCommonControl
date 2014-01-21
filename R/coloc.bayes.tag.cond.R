@@ -92,27 +92,31 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	binY<-binmod[,"Y.star"]
 
     #seperate the tags and the conditioning SNPs
-	for (cc in 1:length(cond)){
-		#which tag is conditional SNP cc in, and what is its index
-		ccsnp<-cond[cc]
-		cctag<-tagkey[which(names(tagkey)==ccsnp)]
-		size.ccindex<-which(orig.tags==cctag)
-        tag.ccindex<-which(tags==cctag)
-		if (length(tag.ccindex)>0){
-            #then we are still analysing the tag with the conditional SNP in
-			if (cctag==ccsnp){
-				if (tagsize[size.ccindex]==1){
-					#remove this tag
-					tags<-tags[-tag.ccindex]
-				}else{
-					#index this tag by a different snp
-					tags[tag.ccindex]<-setdiff(names(tagkey[which(tagkey==cctag)]),cctag)[1]
-                    orig.tags[size.ccindex]<-tags[tag.ccindex]
+	tagdrop<-c()
+	for (tt in 1:n.clean){
+		firsttag<-tags[tt]
+		fulltag<-names(tagkey[which(tagkey==firsttag)])
+		numcond<-length(which(fulltag %in% cond))
+		orig.place<-which(orig.tags==firsttag)
+		if (numcond>0){
+			#there is at least one conditional SNP, which we must remove
+			if (numcond==length(fulltag)){
+				#the tag is entirely from cond - remove the tag
+				tagdrop<-c(tagdrop,tt)
+				tagsize[orig.place]=tagsize[orig.place]-numcond
+			}
+			else{
+				#remove numcond SNPs from the tag and rename if necessary
+				tagsize[orig.place]=tagsize[orig.place]-numcond
+				if (firsttag %in% cond){
+					tags[tt]<-setdiff(fulltag,cond[which(cond %in% fulltag)])[1]		
+					orig.tags[orig.place]<-tags[tt]
 				}
 			}
-			tagsize[size.ccindex]=tagsize[size.ccindex]-1
 		}
-		
+	}
+	if (length(tagdrop)>0){
+		tags<-tags[-tagdrop]
 	}
 
 	n.clean<-length(tags)
@@ -138,11 +142,28 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		}
 		tags<-setdiff(tags,drop)
 		df.trait1<-df.trait1[,- which(colnames(df.trait1) %in% drop)]
-		df1<-df1[,-which(colnames(df1) %in% drop)]
 		n.clean <- length(tags)
 	}
+	if ( intrank < ncol(intX1)){
+		#we need to remove one of cond1
+		#we must remove at k columns
+		k<-ncol(intX1)-intrank
+		drop<-c()
+		for(ii in 1:length(cond1)) { 
+			if (length(drop)<k){ 
+				xsub <- intX1[,setdiff(colnames(intX1),cond1[ii])]
+				droprank<- qr(xsub)$rank
+				if (droprank==intrank){
+					drop<-c(drop,cond1[ii])
+					intX1<-xsub
+				}
+			}
+		}
+		cond1<-setdiff(cond1,drop)
+		df.trait1<-df.trait1[,- which(colnames(df.trait1) %in% drop)]
+		cond<-union(cond1,cond2)
+	}
 	#run the model
-	f1 <- as.formula(paste("Y ~", paste(c(tags,cond1),collapse="+")))
 	modelsep<-cbind(diag(n.clean),matrix(1,ncol=length(cond1),nrow=n.clean))
 	mod.trait1<-glib(x=df.trait1[,-1], y=df.trait1[,1], error="binomial", link="logit",models=modelsep)
 	pp.trait1<-mod.trait1$bf$postprob[,2]
@@ -168,11 +189,28 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		}
 		tags<-setdiff(tags,drop)
 		df.trait2<-df.trait2[,- which(colnames(df.trait2) %in% drop)]
-		df1<-df1[,-which(colnames(df1) %in% drop)]
 		n.clean <- length(tags)
 	}
+	if ( intrank < ncol(intX2)){
+		#we need to remove one of cond2
+		#we must remove at k columns
+		k<-ncol(intX2)-intrank
+		drop<-c()
+		for(ii in 1:n.clean) { 
+			if (length(drop)<k){ 
+				xsub <- intX2[,setdiff(colnames(intX2),cond2[ii])]
+				droprank<- qr(xsub)$rank
+				if (droprank==intrank){
+					drop<-c(drop,cond2[ii])
+					intX2<-xsub
+				}
+			}
+		}
+		cond2<-setdiff(cond2,drop)
+		df.trait2<-df.trait2[,- which(colnames(df.trait2) %in% drop)]
+		cond<-union(cond1,cond2)
+	}
 	#run the model
-	f2 <- as.formula(paste("Y ~", paste(c(tags,cond2),collapse="+")))
 	modelsep<-cbind(diag(n.clean),matrix(1,ncol=length(cond2),nrow=n.clean))
 	mod.trait2<-glib(x=df.trait2[,-1], y=df.trait2[,1]/2, error="binomial", link="logit",models=modelsep)
 	pp.trait2<-mod.trait2$bf$postprob[,2]
