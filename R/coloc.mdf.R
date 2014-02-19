@@ -138,8 +138,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         tmp
     })
     npairs<-length(unlist(combs))/2
-	if (npairs > 400)
-		return(1)
+	
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
     } else {
@@ -165,6 +164,8 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
     min.models <- min(3,length(snps))
     if(length(wh) < min.models) 
         wh <- order(probs,decreasing=TRUE)[1:min.models]
+	if (length(wh) > 1000)
+		return(1)
     cat("Averaging coloc testing over",length(wh),"models with posterior probabilities >=",signif(min(probs[wh]),digits=2),"\n")
      
     for(i in wh) {
@@ -661,8 +662,13 @@ singlesnp.twotrait<-function(df1,response="Y",snps=setdiff(colnames(df1),respons
     results.t2<-single.snp.tests(df.t2[,response], snp.data=snp.data.t2)
     capture.output(show.results.t2<-show(results.t2))
     
+<<<<<<< HEAD
+    cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
+    cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")
+=======
     message("The minimum single SNP p value for trait 1 is: ", min(show.results.t1[,4]))
     message("The minimum single SNP p value for trait 2 is: ", min(show.results.t2[,4]))
+>>>>>>> e680ecab3728134b18bda7dac55816f85f89b06d
     return(c(min(show.results.t1[,4]),min(show.results.t2[,4])))
 }
 
