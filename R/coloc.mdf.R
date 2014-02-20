@@ -137,7 +137,11 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         }
         tmp
     })
+<<<<<<< HEAD
     npairs<-length(unlist(combs))/nsnps
+=======
+    npairs<-length(unlist(combs))/2
+>>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
 	
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
@@ -661,7 +665,6 @@ singlesnp.twotrait<-function(df1,response="Y",snps=setdiff(colnames(df1),respons
     
     results.t2<-single.snp.tests(df.t2[,response], snp.data=snp.data.t2)
     capture.output(show.results.t2<-show(results.t2))
-    
 
     cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
     cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")

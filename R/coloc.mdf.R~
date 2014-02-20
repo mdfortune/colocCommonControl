@@ -137,7 +137,11 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         }
         tmp
     })
+<<<<<<< HEAD
     npairs<-length(unlist(combs))/nsnps
+=======
+    npairs<-length(unlist(combs))/2
+>>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
 	
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
@@ -663,12 +667,19 @@ singlesnp.twotrait<-function(df1,response="Y",snps=setdiff(colnames(df1),respons
     capture.output(show.results.t2<-show(results.t2))
     
 <<<<<<< HEAD
+
+    cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
+    cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")
+
+=======
+<<<<<<< HEAD
     cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
     cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")
 =======
     message("The minimum single SNP p value for trait 1 is: ", min(show.results.t1[,4]))
     message("The minimum single SNP p value for trait 2 is: ", min(show.results.t2[,4]))
 >>>>>>> e680ecab3728134b18bda7dac55816f85f89b06d
+>>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
     return(c(min(show.results.t1[,4]),min(show.results.t2[,4])))
 }
 
