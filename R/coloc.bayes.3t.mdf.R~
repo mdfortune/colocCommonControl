@@ -378,7 +378,7 @@ coloc.bayes.3t.tag <- function(df1,snps=setdiff(colnames(df1),response),response
     #-2 log the bf with a flat prior
     logB10=0.5*mods1$bf$twologB10[,2]
     logbf <- numeric(15)
-    tagsize<-tagsize[unlist(lapply(tags,function(x){which(orig.tags %in% x)}))]
+    tagsize<-tagsize[which(unique(tagkey) %in% tags)]
     #which SNPs are present in each model
     if (n.clean>1){
         n1 <- as.vector( models[,1:n.clean] %*% tagsize )

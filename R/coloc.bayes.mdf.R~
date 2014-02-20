@@ -196,7 +196,7 @@ coloc.bayes.tag <- function(df1,snps=setdiff(colnames(df1),response),response="Y
     for (ii in 1:n.clean){
         tagsize[ii]<-length(which(tagkey==tags[ii]))
     }
-    
+    orig.tags<-tags
  	#make binomial model
     f1 <- as.formula(paste("Y ~ 1 | ", paste(tags,collapse="+")))
     x1 <- df1[,tags]
@@ -318,8 +318,8 @@ coloc.bayes.tag <- function(df1,snps=setdiff(colnames(df1),response),response="Y
     	n.clean <- length(tags)
 	cat("We consider ",n.clean, " tags in the final analysis. \n")
 
-    tagsize<-tagsize[which(unique(tagkey) %in% tags)]
-
+    tagsize[unlist(lapply(tags,function(x){which(orig.tags %in% x)}))]
+	
     #covert to a binomial model so we can run glib
     f1 <- as.formula(paste("Y ~ 1 | ", paste(tags,collapse="+")))
     binmod<-mlogit2logit(f1,data=df1,choices=0:2,base.choice = 1)$data

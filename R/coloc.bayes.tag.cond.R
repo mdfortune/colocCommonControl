@@ -111,6 +111,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 				if (firsttag %in% cond){
 					tags[tt]<-setdiff(fulltag,cond[which(cond %in% fulltag)])[1]		
 					orig.tags[orig.place]<-tags[tt]
+					tagkey[which(tagkey==firsttag)]<-tags[tt]
 				}
 			}
 		}
@@ -263,7 +264,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		n.clean <- length(tags)
 	}
 	n.clean <- length(tags)
-	tagsize<-tagsize[which(orig.tags %in% tags)]
+	tagsize<-tagsize[unlist(lapply(tags,function(x){which(orig.tags %in% x)}))]
 	#which models are we testing?
 	#the matrix of tag models only
     tagmodels<-makebinmod(n.clean,1)
@@ -313,7 +314,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
     pp<-(exp( tmp - logsum(tmp) ))
     snplist<-vector("list",length(pp))
     for (ii in 1:length(pp)){
-        snplist[[ii]]<-names(which(tagkey==tags[ii]))
+        snplist[[ii]]<-setdiff(names(which(tagkey==tags[ii])),cond)
     }
     return(list("postprob"=pp,"tags"=tags,"snps"=snplist,"models"=models,"bf"=logB10))
 }
