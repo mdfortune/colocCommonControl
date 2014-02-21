@@ -4,8 +4,8 @@ Depends:
     methods,
     MASS,
     BMA,
-    coloc
-	mlogitBMA
+    coloc,
+	mlogitBMA,
 	nnet
 Suggests:
     ggplot2,
