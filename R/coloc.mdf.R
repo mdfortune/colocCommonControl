@@ -145,7 +145,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
     } else {
         models <- models[[1]]
     }
-    modelsbin<-cbind(models,models,rep(1,npairs))
+    modelsbin<-cbind(models,models,rep(1,nrow(models)))
     ## fit the models to each dataset to get posterior probs
     probs <- multi.var.bf(modelsbin,  x=binX, y=binY, family="binomial",quiet=quiet)
     probs <- probs/sum(probs)
