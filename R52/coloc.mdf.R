@@ -1,4 +1,3 @@
-
 #'Wrapper to use colocalization testing within a Bayesian model averaging
 #'structure for datasets with common controls.
 #'
@@ -12,7 +11,7 @@
 #'@export
 #'@param df1 A dataframe, containing response and potential explanatory variables for the dataset.
 #'@param snps The SNPs to consider as potential explanatory variables
-#'@param response The name of the response variable in \code{df1}
+#'@param response The name of the response variable in \code{df1}. The response variable should be a numeric vector, with 0 indicating controls, 1 and 2 the two case phenotypes.
 #'@param thr posterior probability threshold used to trim SNP list.  Only SNPs with a marginal posterior probability of inclusion greater than this with one or other trait will be included in the full BMA analysis
 #'@param nsnps number of SNPs required to model both traits.  The BMA analysis will average over all possible \code{nsnp} SNP models, subject to \code{thr} above.
 #'@param n.approx number of values at which to numerically approximate the posterior
@@ -40,7 +39,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         cat("Dropped",n.orig - length(snps),"of",n.orig,"SNPs due to LD: r2 >",r2.trim,"\n",length(snps),"SNPs remain.\n")
 
 
-    f1 <- as.formula(paste("Y ~ 1 | ", paste(snps,collapse="+")))
+    f1 <- as.formula(paste(response, "~ 1 | ", paste(snps,collapse="+")))
     x1 <- df1[,snps]
     n.clean <- length(snps)
     binmod<-mlogit2logit(f1,data=df1,choices=0:2,base.choice = 1)$data
@@ -138,7 +137,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         }
         tmp
     })
-    npairs<-length(unlist(combs))/2
+    npairs<-length(unlist(combs))/nsnps
 	if (npairs > 400)
 		return(1)
     if(length(nsnps)>1) {
