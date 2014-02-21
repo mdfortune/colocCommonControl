@@ -5,6 +5,8 @@ Depends:
     MASS,
     BMA,
     coloc
+	mlogitBMA
+	nnet
 Suggests:
     ggplot2,
     snpStats
