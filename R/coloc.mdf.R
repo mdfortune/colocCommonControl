@@ -76,7 +76,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
 	}
 
 	# remove any completely predictive SNPs
-	 f <- as.formula(paste("Y ~", paste(colnames(binX),collapse="+")))
+	 f <- as.formula(paste(response, "~", paste(colnames(binX),collapse="+")))
     capture.output(lm1 <- glm(f,data=as.data.frame(cbind(binY,binX)),family="binomial"))
     while(any(is.na(coefficients(lm1)))) {
         z.drop <- which(is.na(coefficients(lm1))[-c(1,ncol(binX)+1)])
@@ -86,7 +86,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         bindrop<-c(paste0("z_1.",drop),paste0("z_2.",drop))
 		snps<-setdiff(snps,drop)
 		binX<-binX[,- which(colnames(binX) %in% bindrop)]
-        f <- as.formula(paste("Y ~", paste(colnames(binX),collapse="+")))
+        f <- as.formula(paste(response, "~", paste(colnames(binX),collapse="+")))
         capture.output(lm1 <- glm(f,data=as.data.frame(cbind(binY,binX)),family="binomial"))
     }
 
@@ -173,7 +173,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         snps2<-paste("2:",unlist(modelsnps),sep="")
         if(!quiet)
             cat(".")
-        capture.output(multiglm <- multinom(as.formula(paste("Y~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
+        capture.output(multiglm <- multinom(as.formula(paste(response"Y~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
         coef.1[[i]] <- coefficients(multiglm)[1,modelsnps]
         coef.2[[i]] <- coefficients(multiglm)[2,modelsnps]
         var[[i]] <- vcov(multiglm)[c(snps1,snps2),c(snps1,snps2)]
