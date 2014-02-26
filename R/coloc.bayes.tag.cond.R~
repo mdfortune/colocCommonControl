@@ -76,8 +76,8 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	# remove any completely predictive tags
 	f <- as.formula(paste("Y ~", paste(colnames(binX),collapse="+")))
     capture.output(lm1 <- glm(f,data=as.data.frame(cbind(binY,binX)),family="binomial"))
-    while(any(is.na(coefficients(lm1)))) {
-        z.drop <- which(is.na(coefficients(lm1))[-c(1,ncol(binX)+1)])
+    while(any(is.na(coefficients(lm1)[-c(1,ncol(binX)+1)]))) {
+        z.drop <- colnames(binX)[which(is.na(coefficients(lm1))[-c(1,ncol(binX)+1)])]
 		drop<-unique(gsub("z_2.","",gsub("z_1.","",z.drop)))
         if(!quiet)
             cat("Dropping",length(drop),"inestimable tags (most likely due to colinearity):\n",drop,"\n")
