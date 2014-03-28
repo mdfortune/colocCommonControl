@@ -137,18 +137,9 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         }
         tmp
     })
-<<<<<<< HEAD
-<<<<<<< HEAD
-    npairs<-length(unlist(combs))/nsnps
-=======
-    npairs<-length(unlist(combs))/2
->>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
-	
-=======
-    npairs<-length(unlist(combs))/nsnps
-	if (npairs > 400)
-		return(1)
->>>>>>> 38d39de598021136c76423166db460ef66ce211b
+    #npairs<-length(unlist(combs))/nsnps
+	#if (npairs > 400)
+		#return(1)
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
     } else {
@@ -184,7 +175,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         snps2<-paste("2:",unlist(modelsnps),sep="")
         if(!quiet)
             cat(".")
-        capture.output(multiglm <- multinom(as.formula(paste(response"Y~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
+        capture.output(multiglm <- multinom(as.formula(paste("Y~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
         coef.1[[i]] <- coefficients(multiglm)[1,modelsnps]
         coef.2[[i]] <- coefficients(multiglm)[2,modelsnps]
         var[[i]] <- vcov(multiglm)[c(snps1,snps2),c(snps1,snps2)]

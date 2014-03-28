@@ -11,7 +11,7 @@
 #'@export
 #'@param df1 A dataframe, containing response and potential explanatory variables for the dataset.
 #'@param snps The SNPs to consider as potential explanatory variables
-#'@param response The name of the response variable in \code{df1}
+#'@param response The name of the response variable in \code{df1}. The response variable should be a numeric vector, with 0 indicating controls, 1 and 2 the two case phenotypes.
 #'@param thr posterior probability threshold used to trim SNP list.  Only SNPs with a marginal posterior probability of inclusion greater than this with one or other trait will be included in the full BMA analysis
 #'@param nsnps number of SNPs required to model both traits.  The BMA analysis will average over all possible \code{nsnp} SNP models, subject to \code{thr} above.
 #'@param n.approx number of values at which to numerically approximate the posterior
@@ -39,7 +39,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         cat("Dropped",n.orig - length(snps),"of",n.orig,"SNPs due to LD: r2 >",r2.trim,"\n",length(snps),"SNPs remain.\n")
 
 
-    f1 <- as.formula(paste("Y ~ 1 | ", paste(snps,collapse="+")))
+    f1 <- as.formula(paste(response, "~ 1 | ", paste(snps,collapse="+")))
     x1 <- df1[,snps]
     n.clean <- length(snps)
     binmod<-mlogit2logit(f1,data=df1,choices=0:2,base.choice = 1)$data
@@ -76,7 +76,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
 	}
 
 	# remove any completely predictive SNPs
-	 f <- as.formula(paste("Y ~", paste(colnames(binX),collapse="+")))
+	 f <- as.formula(paste(response, "~", paste(colnames(binX),collapse="+")))
     capture.output(lm1 <- glm(f,data=as.data.frame(cbind(binY,binX)),family="binomial"))
     while(any(is.na(coefficients(lm1)))) {
         z.drop <- which(is.na(coefficients(lm1))[-c(1,ncol(binX)+1)])
@@ -86,7 +86,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         bindrop<-c(paste0("z_1.",drop),paste0("z_2.",drop))
 		snps<-setdiff(snps,drop)
 		binX<-binX[,- which(colnames(binX) %in% bindrop)]
-        f <- as.formula(paste("Y ~", paste(colnames(binX),collapse="+")))
+        f <- as.formula(paste(response, "~", paste(colnames(binX),collapse="+")))
         capture.output(lm1 <- glm(f,data=as.data.frame(cbind(binY,binX)),family="binomial"))
     }
 
@@ -137,18 +137,15 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         }
         tmp
     })
-<<<<<<< HEAD
-    npairs<-length(unlist(combs))/nsnps
-=======
-    npairs<-length(unlist(combs))/2
->>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
-	
+    #npairs<-length(unlist(combs))/nsnps
+	#if (npairs > 400)
+		#return(1)
     if(length(nsnps)>1) {
         models <- do.call("rbind",models)
     } else {
         models <- models[[1]]
     }
-    modelsbin<-cbind(models,models,rep(1,npairs))
+    modelsbin<-cbind(models,models,rep(1,nrow(models)))
     ## fit the models to each dataset to get posterior probs
     probs <- multi.var.bf(modelsbin,  x=binX, y=binY, family="binomial",quiet=quiet)
     probs <- probs/sum(probs)
@@ -665,21 +662,10 @@ singlesnp.twotrait<-function(df1,response="Y",snps=setdiff(colnames(df1),respons
     
     results.t2<-single.snp.tests(df.t2[,response], snp.data=snp.data.t2)
     capture.output(show.results.t2<-show(results.t2))
-    
-<<<<<<< HEAD
 
     cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
     cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")
 
-=======
-<<<<<<< HEAD
-    cat("The minimum single SNP p value for Trait 1 is: ", min(show.results.t1[,4]),"\n")
-    cat("The minimum single SNP p value for Trait 2 is: ", min(show.results.t2[,4]),"\n")
-=======
-    message("The minimum single SNP p value for trait 1 is: ", min(show.results.t1[,4]))
-    message("The minimum single SNP p value for trait 2 is: ", min(show.results.t2[,4]))
->>>>>>> e680ecab3728134b18bda7dac55816f85f89b06d
->>>>>>> 3cc5e75063afbac4fd06c63039b37a74d188ed3d
     return(c(min(show.results.t1[,4]),min(show.results.t2[,4])))
 }
 
