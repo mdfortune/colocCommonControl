@@ -668,8 +668,8 @@ singlesnp.twotrait<-function(df1,response="Y",snps=setdiff(colnames(df1),respons
     results.t2<-single.snp.tests(df.t2[,response], snp.data=snp.data.t2)
     capture.output(show.results.t2<-show(results.t2))
     
-    cat("The minimum single SNP p value for RA is: ", min(show.results.t1[,4]),"\n")
-    cat("The minimum single SNP p value for T1D is: ", min(show.results.t2[,4]),"\n")
+    message("The minimum single SNP p value for trait 1 is: ", min(show.results.t1[,4]))
+    message("The minimum single SNP p value for trait 2 is: ", min(show.results.t2[,4]))
     return(c(min(show.results.t1[,4]),min(show.results.t2[,4])))
 }
 
