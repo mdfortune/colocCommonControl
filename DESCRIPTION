@@ -4,6 +4,7 @@ Depends:
     methods,
     MASS,
     BMA,
+    mlogitBMA,
     coloc
 Suggests:
     ggplot2,
