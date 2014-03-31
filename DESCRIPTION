@@ -5,6 +5,7 @@ Depends:
     MASS,
     BMA,
     mlogitBMA,
+    nnet,
     coloc
 Suggests:
     ggplot2,

@@ -31,8 +31,8 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
     n.orig <- length(snps)
     if(n.orig<3)
         return(1)
-    prep <- coloc:::prepare.df(df1, snps, r2.trim=r2.trim, dataset=1, quiet=quiet)
-    df1 <- prep$df
+    prep <- coloc:::prepare.df(df1=df1[,c(response,snps)], r2.trim=r2.trim, dataset=1, quiet=quiet)
+    df1 <- prep$df1[,c(response,prep$snps)]
     snps <- prep$snps
     
     if(!quiet)
@@ -216,7 +216,9 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         return(new("coloc",
                   result=c(stats["eta.hat"],chisquare=NA,stats["n"],stats["p"]),
                   method="BMA",
-                   plot.data=list(coef1=unlist(coef.1),coef2=unlist(coef.2),var1=unlist(var.1),var2=unlist(var.2),model.prob=probs[wh])))
+                   plot.data=list(coef1=unlist(coef.1),coef2=unlist(coef.2),
+                     var1=unlist(var.1),var2=unlist(var.2),
+                     model.prob=probs[wh])))
     } else {
         return(new("colocBayes",
                   result=c(stats["eta.hat"],chisquare=NA,stats["n"],stats["p"]),
