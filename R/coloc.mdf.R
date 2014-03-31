@@ -173,7 +173,7 @@ coloc.var.bma <- function(df1,snps=setdiff(colnames(df1),response),
         snps2<-paste("2:",unlist(modelsnps),sep="")
         if(!quiet)
             cat(".")
-        capture.output(multiglm <- multinom(as.formula(paste(response"Y~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
+        capture.output(multiglm <- multinom(as.formula(paste(response,"~",paste(modelsnps,collapse="+"))), data=df1,maxit=1000))
         coef.1[[i]] <- coefficients(multiglm)[1,modelsnps]
         coef.2[[i]] <- coefficients(multiglm)[2,modelsnps]
         var[[i]] <- vcov(multiglm)[c(snps1,snps2),c(snps1,snps2)]
