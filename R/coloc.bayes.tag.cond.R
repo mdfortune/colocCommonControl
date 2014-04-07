@@ -99,21 +99,8 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		numcond<-length(which(fulltag %in% cond))
 		orig.place<-which(orig.tags==firsttag)
 		if (numcond>0){
-			#there is at least one conditional SNP, which we must remove
-			if (numcond==length(fulltag)){
-				#the tag is entirely from cond - remove the tag
-				tagdrop<-c(tagdrop,tt)
-				tagsize[orig.place]=tagsize[orig.place]-numcond
-			}
-			else{
-				#remove numcond SNPs from the tag and rename if necessary
-				tagsize[orig.place]=tagsize[orig.place]-numcond
-				if (firsttag %in% cond){
-					tags[tt]<-setdiff(fulltag,cond[which(cond %in% fulltag)])[1]		
-					orig.tags[orig.place]<-tags[tt]
-					tagkey[which(tagkey==firsttag)]<-tags[tt]
-				}
-			}
+			#there is at least one conditional SNP in this tag - we remove the whole tag
+			tagdrop<-c(tagdrop,tt)
 		}
 	}
 	if (length(tagdrop)>0){
