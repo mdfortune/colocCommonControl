@@ -99,13 +99,19 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		numcond<-length(which(fulltag %in% cond))
 		orig.place<-which(orig.tags==firsttag)
 		if (numcond>0){
-			#there is at least one conditional SNP in this tag - we remove it
+			#there is at least one conditional SNP in this tag - we remove the whole tag
 			tagdrop<-c(tagdrop,tt)
 		}
 	}
 	if (length(tagdrop)>0){
 		tags<-tags[-tagdrop]
 	}
+
+	#rearrrange the data matrix, sending the conditioning SNPs to the back
+	condcol<-which(colnames(df1) %in% cond)
+	othercol<-which(!(colnames(df1) %in% cond))
+	df1.temp<-df1[,c(othercol,condcol)]
+
 
 	n.clean<-length(tags)
     #remove tags with low posterior probabilities in the individual models.

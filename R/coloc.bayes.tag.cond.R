@@ -107,6 +107,12 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 		tags<-tags[-tagdrop]
 	}
 
+	#rearrrange the data matrix, sending the conditioning SNPs to the back
+	condcol<-which(colnames(df1) %in% cond)
+	othercol<-which(!(colnames(df1) %in% cond))
+	df1<-df1[,c(othercol,condcol)]
+
+
 	n.clean<-length(tags)
     #remove tags with low posterior probabilities in the individual models.
 	#extract just those samples relating to trait1
