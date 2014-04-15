@@ -112,7 +112,7 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	for (cc in 1:length(cond)){
 	    condcol<-c(condcol,which(colnames(df1)==cond[cc]))
 	}
-	othercol<-setdiff(colnames(df1),condcol)
+	othercol<-setdiff((1:length(colnames(df1))),condcol)
 	df1<-df1[,c(othercol,condcol)]
 
 
