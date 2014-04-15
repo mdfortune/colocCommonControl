@@ -108,8 +108,10 @@ coloc.bayes.tag.cond <- function(df1,snps=setdiff(colnames(df1),response),respon
 	}
 
 	#rearrrange the data matrix, sending the conditioning SNPs to the back
-	condcol<-which(colnames(df1) %in% cond)
-	othercol<-which(!(colnames(df1) %in% cond))
+	for (cc in 1:length(cond)){
+	    condcol<-which(colnames(df1)==cond[cc])
+	}
+	othercol<-setdiff(colnames(df1),condcol)
 	df1<-df1[,c(othercol,condcol)]
 
 
