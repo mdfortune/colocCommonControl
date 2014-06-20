@@ -273,7 +273,7 @@ pcs.var.prepare <- function(X) {
     stop("require at least 2 SNPs in object X")
   if(is(X,"SnpMatrix")) {
     if(any(X==as.raw("0"))) {
-      X <- fillin(X)
+      X <- coloc::fillin(X)
     } else {
       X <- as(X,"numeric")
     }
